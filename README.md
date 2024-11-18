@@ -11,72 +11,50 @@
 - 丰富的可视化功能
 - 完整的测试覆盖
 
-## 项目结构
-
-```
-project/
-├── src/                         # 源代码目录
-│   ├── models/                  # 模型核心实现
-│   │   ├── agent.py            # 智能体类定义
-│   │   ├── game.py             # 博弈游戏逻辑
-│   │   └── belief_update.py    # 信念更新机制
-│   ├── networks/               # 网络生成与分析
-│   │   ├── geometric.py        # 随机几何图生成
-│   │   ├── regular.py          # 规则图生成
-│   │   ├── random.py           # ER随机图生成
-│   │   ├── small_world.py      # WS小世界网络生成
-│   │   ├── scale_free.py       # BA无标度网络生成
-│   │   └── metrics.py          # 网络特征计算
-│   ├── simulation/             # 仿真实验
-│   │   ├── config.py           # 实验配置
-│   │   └── runner.py           # 仿真运行器
-│   └── visualization/          # 可视化模块
-│       ├── network_plots.py    # 网络可视化
-│       └── analysis_plots.py   # 结果分析图
-├── experiments/                # 实验实现
-│   ├── experiment1/           # 随机几何图上的合作演化
-│   ├── experiment2/           # 规则图上的群体动力学
-│   └── experiment3/           # 网络结构对比研究
-├── data/                      # 数据存储
-│   ├── experiment1/          
-│   ├── experiment2/          
-│   └── experiment3/          
-├── tests/                    # 单元测试
-│   ├── test_networks/        # 网络模块测试
-│   ├── experiment1/          # 实验一测试
-│   ├── experiment2/          # 实验二测试
-│   └── experiment3/          # 实验三测试
-├── notebooks/                 # Jupyter notebooks
-├── requirements.txt           # 项目依赖
-└── pytest.ini                # pytest配置文件
-```
-
 ## 核心组件
 
 ### 1. 模型实现 (`src/models/`)
 
-| 组件 | 文件 | 主要功能 |
-|-----|------|---------|
-| Agent类 | `agent.py` | - 信念维护和更新<br>- 决策机制<br>- 历史记录 |
-| Game类 | `game.py` | - 环境协调<br>- 博弈执行<br>- 收益计算 |
+#### Agent类 (`agent.py`)
+智能体核心功能:
+- 信念维护和更新(EMA规则)
+- 基于期望效用的决策机制
+- 行动和信念历史记录
+- 收敛状态检测
+
+#### PublicGoodsGame类 (`game.py`)
+游戏环境管理:
+- 多智能体环境协调
+- λ值生成(多种分布)
+- 博弈回合执行
+- 收益计算
+- 群体信念更新
 
 ### 2. 网络模块 (`src/networks/`)
 
 | 网络类型 | 文件 | 主要特点 |
 |---------|------|---------|
-| 随机几何图 | `geometric.py` | - r_g参数配置<br>- 确保连通性 |
-| 规则图 | `regular.py` | - k-规则图生成<br>- 环形布局 |
-| ER随机图 | `random.py` | - 连接概率p配置 |
-| WS小世界 | `small_world.py` | - 重连概率β配置 |
-| BA无标度 | `scale_free.py` | - 优先连接机制 |
+| 随机几何图 | `geometric.py` | - 支持r_g参数配置<br>- 确保连通性 |
+| 规则图 | `regular.py` | - k-规则图生成<br>- 环形布局支持 |
+| ER随机图 | `random.py` | - 连接概率p配置<br>- 确保连通性 |
+| WS小世界 | `small_world.py` | - 重连概率β配置<br>- 小世界特征计算 |
+| BA无标度 | `scale_free.py` | - 优先连接机制<br>- 幂律分布特征 |
 
 ### 3. 实验模块 (`experiments/`)
 
+每个实验包含四个核心组件:
+- 配置系统 (`exp*_config.yaml`)
+- 运行器 (`exp*_runner.py`)
+- 分析器 (`exp*_analysis.py`)
+- 可视化器 (`exp*_visualization.py`)
+
+#### 实验内容
+
 | 实验 | 研究内容 | 主要结果 |
 |-----|---------|---------|
-| 实验一 | 随机几何图研究 | - 收敛时间分布<br>- 网络密度影响 |
-| 实验二 | 规则图研究 | - 邻居数量影响<br>- 同步化现象 |
-| 实验三 | 网络结构对比 | - 结构特征对比<br>- 性能比较 |
+| 实验一 | 随机几何图上的合作演化 | - 收敛时间分布<br>- 网络密度影响<br>- 元稳态特征 |
+| 实验二 | 规则图上的群体动力学 | - 邻居数量影响<br>- 同步化现象<br>- 稳定性分析 |
+| 实验三 | 网络结构对比研究 | - 结构特征对比<br>- 合作水平分析<br>- 收敛性能比较 |
 
 ## 快速开始
 
@@ -107,6 +85,16 @@ analyzer.save_analysis_results()
 from experiments.experiment1 import ExperimentVisualizer
 visualizer = ExperimentVisualizer("data/experiment1/analysis")
 visualizer.save_all_figures("data/experiment1/figures")
+```
+
+### 运行测试
+```bash
+# 运行所有测试
+pytest
+
+# 运行特定模块测试
+pytest tests/test_networks/
+pytest tests/experiment1/
 ```
 
 ## 项目进度
