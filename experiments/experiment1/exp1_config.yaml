@@ -51,7 +51,7 @@ visualization:
 # 并行计算配置
 parallel:
   enabled: true
-  n_processes: 8  # 并行进程数
+  n_processes: 16  # 调整为CPU线程数的80%左右
   chunk_size: 10  # 任务分块大小
 
 # 日志配置

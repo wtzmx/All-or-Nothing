@@ -79,7 +79,7 @@ class ExperimentRunner:
         # 生成规则图网络
         network = CirculantGraph(
             n_nodes=self.config["network"]["n_agents"],
-            l=l_value,
+            neighbors=l_value,
             seed=self.config["network"]["seed"] + trial_id
         )
         

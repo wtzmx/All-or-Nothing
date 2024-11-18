@@ -8,6 +8,7 @@ from typing import Dict, List, Tuple, Optional
 import logging
 from multiprocessing import Pool
 import pickle
+from tqdm import tqdm
 
 from src.networks.geometric import RandomGeometricGraph
 from src.models.agent import Agent
@@ -144,17 +145,32 @@ class ExperimentRunner:
         
     def _run_parallel_trials(self, radius: float) -> List[Dict]:
         """并行运行多次实验"""
+        n_trials = self.config["simulation"]["n_trials"]
+        
+        # 创建参数列表
+        params = [(radius, i) for i in range(n_trials)]
+        
         if self.config["parallel"]["enabled"]:
             with Pool(self.config["parallel"]["n_processes"]) as pool:
-                results = pool.starmap(
-                    self._run_single_trial,
-                    [(radius, i) for i in range(self.config["simulation"]["n_trials"])]
-                )
+                # 使用starmap替代imap和lambda
+                results = list(tqdm(
+                    pool.starmap(
+                        self._run_single_trial,
+                        params
+                    ),
+                    total=n_trials,
+                    desc=f"Radius {radius:.3f}",
+                    ncols=100,
+                    position=0
+                ))
         else:
-            results = [
-                self._run_single_trial(radius, i) 
-                for i in range(self.config["simulation"]["n_trials"])
-            ]
+            # 使用tqdm包装串行任务
+            results = []
+            for i in tqdm(range(n_trials), 
+                         desc=f"Radius {radius:.3f}", 
+                         ncols=100):
+                results.append(self._run_single_trial(radius, i))
+                
         return results
     
     def run_experiment(self):
@@ -162,9 +178,19 @@ class ExperimentRunner:
         self.logger.info("Starting experiment")
         start_time = datetime.now()
         
-        # 对每个半径值运行实验
-        for radius in self.config["network"]["radius_list"]:
-            self.logger.info(f"Running trials for radius {radius}")
+        # 显示实验配置信息
+        self.logger.info(f"Configuration:")
+        self.logger.info(f"- Number of agents: {self.config['network']['n_agents']}")
+        self.logger.info(f"- Number of trials per radius: {self.config['simulation']['n_trials']}")
+        self.logger.info(f"- Max rounds per trial: {self.config['simulation']['max_rounds']}")
+        
+        # 使用tqdm包装radius循环
+        radius_list = self.config["network"]["radius_list"]
+        for radius in tqdm(radius_list, 
+                          desc="Overall progress", 
+                          position=1, 
+                          leave=True):
+            self.logger.info(f"\nRunning trials for radius {radius}")
             
             # 运行实验并收集结果
             trial_results = self._run_parallel_trials(radius)
@@ -172,8 +198,16 @@ class ExperimentRunner:
             # 保存结果
             self._save_results(trial_results, radius)
             
+            # 显示当前radius的简要统计
+            conv_times = [r['convergence_time'] for r in trial_results]
+            self.logger.info(f"Results for radius {radius}:")
+            self.logger.info(f"- Average convergence time: {np.mean(conv_times):.2f}")
+            self.logger.info(f"- Convergence rate: {sum(r['final_state'] != 'not_converged' for r in trial_results) / len(trial_results):.2%}")
+        
         end_time = datetime.now()
-        self.logger.info(f"Experiment completed in {end_time - start_time}")
+        duration = end_time - start_time
+        self.logger.info(f"\nExperiment completed in {duration}")
+        self.logger.info(f"Results saved in {self.output_dir}")
         
     def _save_results(self, results: List[Dict], radius: float):
         """保存实验结果"""

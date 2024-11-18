@@ -104,7 +104,7 @@ class TestExp2Runner:
         # 检查数值
         assert result["trial_id"] == 0, "trial_id不正确"
         assert result["l_value"] == 2, "l_value不正确"
-        assert isinstance(result["convergence_time"], int), "收敛时间类型错误"
+        assert isinstance(result["convergence_time"], int), "收敛时间类型错"
         assert result["final_state"] in {"contribution", "defection", "not_converged"}, "无效的最终状态"
         assert isinstance(result["network_features"], dict), "网络特征类型错误"
         assert isinstance(result["belief_history"], list), "信念历史类型错误"
@@ -155,16 +155,16 @@ class TestExp2Runner:
         l_value = 2
         network = CirculantGraph(
             n_nodes=runner.config["network"]["n_agents"],
-            l=l_value,
+            neighbors=l_value,
             seed=runner.config["network"]["seed"]
         )
         
         # 检查网络属性
-        assert network.n_nodes == runner.config["network"]["n_agents"], "节点数量不正确"
+        assert network.N == runner.config["network"]["n_agents"], "节点数量不正确"
         assert network.l == l_value, "l值不正确"
         
         # 检查邻居数量
-        for node in range(network.n_nodes):
+        for node in range(network.N):
             neighbors = network.get_closed_neighbors(node)
             assert len(neighbors) == l_value + 1, f"节点{node}的邻居数量不正确"
             

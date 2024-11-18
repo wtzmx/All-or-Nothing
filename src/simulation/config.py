@@ -10,9 +10,11 @@ class NetworkConfig:
     """网络配置参数"""
     type: Literal["geometric", "regular"]  # 网络类型
     n_agents: int = 50                     # 智能体数量
+    seed: Optional[int] = None             # 网络生成的随机种子
     
     # 随机几何图参数
-    r_g: Optional[float] = None           # 几何图连接半径
+    r_g: Optional[float] = None           # 单个几何图连接半径
+    radius_list: Optional[list] = None    # 多个几何图连接半径列表
     
     # 规则图参数
     degree: Optional[int] = None          # 规则图度数
@@ -31,13 +33,29 @@ class NetworkConfig:
             raise ValueError("Number of agents must be positive")
             
         if self.type == "geometric":
-            if self.r_g is None:
-                raise ValueError("r_g must be specified for geometric network")
-            if not isinstance(self.r_g, (int, float)):
-                raise ValueError("r_g must be a number")
-            if self.r_g <= 0 or self.r_g >= 1:  # 修改这里的条件判断
-                raise ValueError("r_g must be between 0 and 1")
+            # 检查是否至少提供了一种半径配置
+            if self.r_g is None and self.radius_list is None:
+                raise ValueError("Either r_g or radius_list must be specified for geometric network")
                 
+            # 验证单个半径
+            if self.r_g is not None:
+                if not isinstance(self.r_g, (int, float)):
+                    raise ValueError("r_g must be a number")
+                if self.r_g <= 0 or self.r_g >= np.sqrt(2):
+                    raise ValueError("r_g must be between 0 and sqrt(2)")
+                    
+            # 验证半径列表
+            if self.radius_list is not None:
+                if not isinstance(self.radius_list, (list, tuple)):
+                    raise ValueError("radius_list must be a list or tuple")
+                if not self.radius_list:
+                    raise ValueError("radius_list cannot be empty")
+                for r in self.radius_list:
+                    if not isinstance(r, (int, float)):
+                        raise ValueError("All values in radius_list must be numbers")
+                    if r <= 0 or r >= np.sqrt(2):
+                        raise ValueError("All values in radius_list must be between 0 and sqrt(2)")
+                        
         elif self.type == "regular":
             if self.degree is None:
                 raise ValueError("degree must be specified for regular network")
@@ -45,6 +63,18 @@ class NetworkConfig:
                 raise ValueError("Invalid degree for regular network")
             if self.degree % 2 != 0:
                 raise ValueError("degree must be even for regular network")
+                
+    def get_radius_values(self) -> list:
+        """获取所有要使用的半径值"""
+        if self.type != "geometric":
+            return []
+            
+        if self.radius_list is not None:
+            return self.radius_list
+        elif self.r_g is not None:
+            return [self.r_g]
+        else:
+            return []
 
 @dataclass
 class GameConfig:
@@ -54,7 +84,7 @@ class GameConfig:
     
     # λ分布参数
     lambda_dist: Literal["uniform", "normal"] = "uniform"
-    lambda_params: Dict = field(default_factory=lambda: {"low": 1.0, "high": 2.0})
+    lambda_params: Dict = field(default_factory=lambda: {"low": 0.0, "high": 2.0})
     
     def __post_init__(self):
         """初始化后立即验证分布类型"""
@@ -104,8 +134,14 @@ class SimulationConfig:
     
     def validate(self) -> None:
         """验证仿真参数的合法性"""
+        if self.max_rounds <= 0:
+            raise ValueError("Maximum rounds must be positive")
+        if self.convergence_threshold <= 0:
+            raise ValueError("Convergence threshold must be positive")
+        if self.save_interval <= 0:
+            raise ValueError("Save interval must be positive")
         if self.save_interval > self.max_rounds:
-            self.save_interval = self.max_rounds  # 自动调整而不是报错
+            raise ValueError("Save interval cannot be larger than maximum rounds")
 
 @dataclass
 class ExperimentConfig:
@@ -135,7 +171,7 @@ class ExperimentConfig:
     
     @classmethod
     def from_file(cls, file_path: Union[str, Path]) -> 'ExperimentConfig':
-        """从配置文件加载配置"""
+        """从配置文件加���配置"""
         file_path = Path(file_path)
         
         if not file_path.exists():

@@ -11,50 +11,80 @@
 - 丰富的可视化功能
 - 完整的测试覆盖
 
-## 核心组件
+## 项目结构
 
-### 1. 模型实现 (`src/models/`)
-
-#### Agent类 (`agent.py`)
-智能体核心功能:
-- 信念维护和更新(EMA规则)
-- 基于期望效用的决策机制
-- 行动和信念历史记录
-- 收敛状态检测
-
-#### PublicGoodsGame类 (`game.py`)
-游戏环境管理:
-- 多智能体环境协调
-- λ值生成(多种分布)
-- 博弈回合执行
-- 收益计算
-- 群体信念更新
-
-### 2. 网络模块 (`src/networks/`)
-
-| 网络类型 | 文件 | 主要特点 |
-|---------|------|---------|
-| 随机几何图 | `geometric.py` | - 支持r_g参数配置<br>- 确保连通性 |
-| 规则图 | `regular.py` | - k-规则图生成<br>- 环形布局支持 |
-| ER随机图 | `random.py` | - 连接概率p配置<br>- 确保连通性 |
-| WS小世界 | `small_world.py` | - 重连概率β配置<br>- 小世界特征计算 |
-| BA无标度 | `scale_free.py` | - 优先连接机制<br>- 幂律分布特征 |
-
-### 3. 实验模块 (`experiments/`)
-
-每个实验包含四个核心组件:
-- 配置系统 (`exp*_config.yaml`)
-- 运行器 (`exp*_runner.py`)
-- 分析器 (`exp*_analysis.py`)
-- 可视化器 (`exp*_visualization.py`)
-
-#### 实验内容
-
-| 实验 | 研究内容 | 主要结果 |
-|-----|---------|---------|
-| 实验一 | 随机几何图上的合作演化 | - 收敛时间分布<br>- 网络密度影响<br>- 元稳态特征 |
-| 实验二 | 规则图上的群体动力学 | - 邻居数量影响<br>- 同步化现象<br>- 稳定性分析 |
-| 实验三 | 网络结构对比研究 | - 结构特征对比<br>- 合作水平分析<br>- 收敛性能比较 |
+```
+project/
+├── src/                         # 源代码目录
+│   ├── models/                  # 模型核心实现
+│   │   ├── agent.py            # 智能体类定义
+│   │   ├── game.py             # 博弈游戏逻辑
+│   │   └── belief_update.py    # 信念更新机制
+│   ├── networks/               # 网络生成与分析
+│   │   ├── geometric.py        # 随机几何图生成
+│   │   ├── regular.py          # 规则图生成
+│   │   ├── random.py           # ER随机图生成
+│   │   ├── small_world.py      # WS小世界网络生成
+│   │   ├── scale_free.py       # BA无标度网络生成
+│   │   └── metrics.py          # 网络特征计算
+│   ├── simulation/             # 仿真实验
+│   │   ├── config.py           # 实验配置
+│   │   └── runner.py           # 仿真运行器
+│   └── visualization/          # 可视化模块
+│       ├── network_plots.py    # 网络可视化
+│       └── analysis_plots.py   # 结果分析图
+├── experiments/                # 实验实现
+│   ├── experiment1/           # 随机几何图上的合作演化
+│   │   ├── exp1_runner.py     # 实验运行器
+│   │   ├── exp1_analysis.py   # 数据分析
+│   │   ├── exp1_visualization.py # 结果可视化
+│   │   └── exp1_config.yaml   # 实验配置
+│   ├── experiment2/           # 规则图上的群体动力学
+│   │   ├── exp2_runner.py
+│   │   ├── exp2_analysis.py
+│   │   ├── exp2_visualization.py
+│   │   └── exp2_config.yaml
+│   └── experiment3/           # 网络结构对比研究
+│       ├── exp3_runner.py
+│       ├── exp3_analysis.py
+│       ├── exp3_visualization.py
+│       └── exp3_config.yaml
+├── tests/                     # 测试套件
+│   ├── models/               # 模型测试
+│   │   ├── test_agent.py
+│   │   └── test_game.py
+│   ├── networks/             # 网络测试
+│   │   ├── test_geometric.py
+│   │   ├── test_regular.py
+│   │   └── test_metrics.py
+│   ├── simulation/           # 仿真测试
+│   │   ├── test_config.py
+│   │   └── test_runner.py
+│   ├── visualization/        # 可视化测试
+│   │   ├── test_network_plots.py
+│   │   └── test_analysis_plots.py
+│   └── experiments/          # 实验测试
+│       ├── experiment1/
+│       ├── experiment2/
+│       └── experiment3/
+├── data/                     # 数据目录
+│   ├── experiment1/         # 实验一数据
+│   │   ├── analysis/       # 分析结果
+│   │   └── figures/        # 可视化图表
+│   ├── experiment2/         # 实验二数据
+│   │   ├── analysis/
+│   │   └── figures/
+│   └── experiment3/         # 实验三数据
+│       ├── analysis/
+│       └── figures/
+├── notebooks/                # Jupyter notebooks
+│   ├── analysis.ipynb       # 数据分析笔记本
+│   └── exploration.ipynb    # 探索性分析
+├── scripts/                 # 运��脚本
+│   └── run_experiment.py    # 实验运行入口
+├── requirements.txt         # 项目依赖
+└── pytest.ini              # pytest配置文件
+```
 
 ## 快速开始
 
@@ -66,26 +96,39 @@ pip install -r requirements.txt
 ```
 
 ### 运行实验
-```python
-# 1. 配置实验
-from src.simulation import ExperimentConfig
-config = ExperimentConfig.from_file("experiments/exp1_config.yaml")
+每个实验目录(experiment1/2/3)下包含四个主要文件：
+- `exp{N}_config.yaml`: 实验配置文件
+- `exp{N}_runner.py`: 实验运行脚本
+- `exp{N}_analysis.py`: 数据分析脚本
+- `exp{N}_visualization.py`: 结果可视化脚本
 
-# 2. 运行实验
-from experiments.experiment1 import ExperimentRunner
-runner = ExperimentRunner(config)
-runner.run_experiment()
+您可以按以下顺序运行实验（以实验一为例）：
 
-# 3. 分析结果
-from experiments.experiment1 import ExperimentAnalyzer
-analyzer = ExperimentAnalyzer("data/experiment1")
-analyzer.save_analysis_results()
+```bash
+# 1. 运行实验（生成原始数据）
+python experiments/experiment1/exp1_runner.py
 
-# 4. 可视化
-from experiments.experiment1 import ExperimentVisualizer
-visualizer = ExperimentVisualizer("data/experiment1/analysis")
-visualizer.save_all_figures("data/experiment1/figures")
+# 2. 分析数据
+python experiments/experiment1/exp1_analysis.py
+
+# 3. 生成可视化结果
+python experiments/experiment1/exp1_visualization.py
 ```
+
+实验结果将保存在以下位置：
+- 原始数据：`data/experiment{N}/`
+- 分析结果：`data/experiment{N}/analysis/`
+- 可视化图表：`data/experiment{N}/figures/`
+
+其中N为实验编号(1-3)。
+
+### 实验内容
+
+| 实验 | 研究内容 | 主要结果 |
+|-----|---------|---------|
+| 实验一 | 随机几何图上的合作演化 | - 收敛时间分布<br>- 网络密度影响<br>- 元稳态特征 |
+| 实验二 | 规则图上的群体动力学 | - 邻居数量影响<br>- 同步化现象<br>- 稳定性分析 |
+| 实验三 | 网络结构对比研究 | - 结构特征对比<br>- 合作水平分析<br>- 收敛性能比较 |
 
 ### 运行测试
 ```bash
@@ -93,8 +136,11 @@ visualizer.save_all_figures("data/experiment1/figures")
 pytest
 
 # 运行特定模块测试
-pytest tests/test_networks/
-pytest tests/experiment1/
+pytest tests/models/          # 测试模型
+pytest tests/networks/        # 测试网络
+pytest tests/simulation/      # 测试仿真
+pytest tests/visualization/   # 测试可视化
+pytest tests/experiments/     # 测试实验
 ```
 
 ## 项目进度
@@ -104,16 +150,8 @@ pytest tests/experiment1/
 - [x] 三个实验完整实现
 - [x] 完整测试套件
 - [ ] 并行性能优化
-- [ ] API文档
+- [ ] API���档
 - [ ] 使用教程
-
-## 贡献指南
-
-1. Fork 仓库
-2. 创建特性分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 创建 Pull Request
 
 ## 许可证
 

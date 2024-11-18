@@ -51,7 +51,7 @@ def runner(config) -> SimulationRunner:
 
 @pytest.fixture(autouse=True)
 def cleanup():
-    """清理测试生成���文件"""
+    """清理测试生成文件"""
     # 在测试前执行
     yield
     # 在测试后清理
@@ -98,7 +98,7 @@ def test_network_types(basic_config):
     assert "r_g" in runner.network_stats
     assert runner.network_stats["r_g"] == basic_config["network"]["r_g"]
     
-    # 测试规则网络
+    # 测���规则网络
     basic_config["network"]["type"] = "regular"
     config = ExperimentConfig.from_dict(basic_config)
     runner = SimulationRunner(config)
@@ -110,18 +110,18 @@ def test_network_types(basic_config):
 def test_config_validation(basic_config):
     """测试配置验证"""
     # 测试无效网络类型
-    invalid_config = basic_config.copy()  # 创建配置的深拷贝
-    invalid_config["network"] = invalid_config["network"].copy()  # 创建network字典的深拷贝
+    invalid_config = basic_config.copy()
+    invalid_config["network"] = invalid_config["network"].copy()
     invalid_config["network"]["type"] = "invalid"
     with pytest.raises(ValueError, match="Unknown network type"):
         ExperimentConfig.from_dict(invalid_config)
-    
+
     # 测试无效的r_g值
-    invalid_config = basic_config.copy()  # 创建新的深拷贝
+    invalid_config = basic_config.copy()
     invalid_config["network"] = invalid_config["network"].copy()
     invalid_config["network"]["type"] = "geometric"
     invalid_config["network"]["r_g"] = -1
-    with pytest.raises(ValueError, match="r_g must be between 0 and 1"):
+    with pytest.raises(ValueError, match=r"r_g must be between 0 and sqrt\(2\)"):
         ExperimentConfig.from_dict(invalid_config)
 
 def test_run_simulation_flow(runner):
