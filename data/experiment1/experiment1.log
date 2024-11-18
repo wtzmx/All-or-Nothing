@@ -53,3 +53,28 @@ Experiment completed in 0:01:26.625900
 2024-11-19 01:56:29,755 - __main__ - INFO - - Max rounds per trial: 10000000
 2024-11-19 01:56:29,756 - __main__ - INFO - 
 Running trials for radius 0.15
+2024-11-19 02:07:12,895 - __main__ - INFO - Results saved for radius 0.15
+2024-11-19 02:07:12,895 - __main__ - INFO - Results for radius 0.15:
+2024-11-19 02:07:12,895 - __main__ - INFO - - Average convergence time: 727.71
+2024-11-19 02:07:12,895 - __main__ - INFO - - Convergence rate: 100.00%
+2024-11-19 02:07:12,896 - __main__ - INFO - 
+Running trials for radius 0.2
+2024-11-19 02:07:14,122 - __main__ - INFO - Results saved for radius 0.2
+2024-11-19 02:07:14,122 - __main__ - INFO - Results for radius 0.2:
+2024-11-19 02:07:14,122 - __main__ - INFO - - Average convergence time: 625.56
+2024-11-19 02:07:14,122 - __main__ - INFO - - Convergence rate: 100.00%
+2024-11-19 02:07:14,122 - __main__ - INFO - 
+Running trials for radius 0.25
+2024-11-19 02:07:15,192 - __main__ - INFO - Results saved for radius 0.25
+2024-11-19 02:07:15,192 - __main__ - INFO - Results for radius 0.25:
+2024-11-19 02:07:15,192 - __main__ - INFO - - Average convergence time: 481.07
+2024-11-19 02:07:15,192 - __main__ - INFO - - Convergence rate: 100.00%
+2024-11-19 02:07:15,192 - __main__ - INFO - 
+Running trials for radius 0.3
+2024-11-19 02:07:16,190 - __main__ - INFO - Results saved for radius 0.3
+2024-11-19 02:07:16,190 - __main__ - INFO - Results for radius 0.3:
+2024-11-19 02:07:16,190 - __main__ - INFO - - Average convergence time: 352.11
+2024-11-19 02:07:16,190 - __main__ - INFO - - Convergence rate: 100.00%
+2024-11-19 02:07:16,191 - __main__ - INFO - 
+Experiment completed in 0:10:46.436053
+2024-11-19 02:07:16,191 - __main__ - INFO - Results saved in data/experiment1

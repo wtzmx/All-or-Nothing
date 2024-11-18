@@ -1,1 +1,5 @@
-
+radius,total_trials,contribution_ratio,defection_ratio,not_converged_ratio,contribution_ci_lower,contribution_ci_upper,defection_ci_lower,defection_ci_upper,not_converged_ci_lower,not_converged_ci_upper
+0.15,500,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0
+0.25,500,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0
+0.2,500,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0
+0.3,500,0.0,1.0,0.0,0.0,0.0,1.0,1.0,0.0,0.0

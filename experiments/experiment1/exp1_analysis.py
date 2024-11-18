@@ -20,8 +20,7 @@ class AnalysisConfig:
     def __post_init__(self):
         if self.network_feature_names is None:
             self.network_feature_names = [
-                "mean_degree", "max_degree", "n_triangles",
-                "clustering_coefficient"
+                "mean_degree", "max_degree", "n_triangles"
             ]
 
 class ExperimentAnalyzer:
@@ -147,23 +146,34 @@ class ExperimentAnalyzer:
             try:
                 feature_stats = {}
                 for radius, df in self.data.items():
-                    # 提取特征值
-                    feature_values = pd.json_normalize(
-                        df["network_features"].apply(eval)
-                    )[feature]
+                    # 添加数据验证
+                    if "network_features" not in df.columns:
+                        self.logger.warning(f"No network_features column for radius {radius}")
+                        continue
                     
-                    # 按最终状态分组计算统计量
-                    stats_by_state = {}
-                    for state in df["final_state"].unique():
-                        values = feature_values[df["final_state"] == state]
-                        stats_by_state[state] = {
-                            "mean": np.mean(values),
-                            "std": np.std(values),
-                            "median": np.median(values),
-                            "count": len(values)
-                        }
-                    
-                    feature_stats[radius] = stats_by_state
+                    # 添加错误处理
+                    try:
+                        # 提取特征值
+                        feature_values = pd.json_normalize(
+                            df["network_features"].apply(eval)
+                        )[feature]
+                        
+                        # 按最终状态分组计算统计量
+                        stats_by_state = {}
+                        for state in df["final_state"].unique():
+                            values = feature_values[df["final_state"] == state]
+                            stats_by_state[state] = {
+                                "mean": np.mean(values),
+                                "std": np.std(values),
+                                "median": np.median(values),
+                                "count": len(values)
+                            }
+                        
+                        feature_stats[radius] = stats_by_state
+                        
+                    except KeyError as e:
+                        self.logger.warning(f"Feature {feature} not found in data for radius {radius}")
+                        continue
                     
                 results[feature] = feature_stats
                 

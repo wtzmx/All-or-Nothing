@@ -226,24 +226,27 @@ class ExperimentVisualizer:
             plots_dir.mkdir(exist_ok=True)
             
             # 保存尾概率分布图
-            self.plot_tail_probabilities(plots_dir)
-            
-            # 保存网络状态图
-            self.plot_network_states(
-                self.results["network_states"],
-                plots_dir
-            )
-            
-            # 保存信念演化图
-            self.plot_belief_evolution(
-                self.results["belief_histories"],
-                plots_dir
-            )
+            if "tail_probabilities" in self.results:
+                self.logger.info("Generating tail probability plots...")
+                self.plot_tail_probabilities(plots_dir)
             
             # 保存收敛状态表
-            self.generate_convergence_table(
-                output_dir / "convergence_states.csv"
-            )
+            if "convergence_states" in self.results:
+                self.logger.info("Generating convergence states table...")
+                self.generate_convergence_table(
+                    output_dir / "convergence_states.csv"
+                )
+            
+            # 保存信念演化图
+            if "metastable_states" in self.results:
+                self.logger.info("Generating belief evolution plots...")
+                # 从metastable_states中提取belief_histories
+                belief_histories = {
+                    radius: data.get("belief_history", [])
+                    for radius, data in self.results["metastable_states"].items()
+                }
+                if any(belief_histories.values()):  # 只在有数据时生成图表
+                    self.plot_belief_evolution(belief_histories, plots_dir)
             
             self.logger.info(f"All figures saved to {output_dir}")
             

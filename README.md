@@ -80,7 +80,7 @@ project/
 ├── notebooks/                # Jupyter notebooks
 │   ├── analysis.ipynb       # 数据分析笔记本
 │   └── exploration.ipynb    # 探索性分析
-├── scripts/                 # 运��脚本
+├── scripts/                 # 运行脚本
 │   └── run_experiment.py    # 实验运行入口
 ├── requirements.txt         # 项目依赖
 └── pytest.ini              # pytest配置文件
