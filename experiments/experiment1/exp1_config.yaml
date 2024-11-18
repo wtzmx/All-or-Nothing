@@ -1,0 +1,67 @@
+# 实验一：随机几何图上的合作演化分析配置
+
+# 实验基本信息
+experiment_name: "geometric_network_evolution"
+description: "Analysis of cooperation evolution on random geometric networks"
+version: "1.0"
+
+# 实验参数设置
+network:
+  type: "geometric"
+  n_agents: 50  # 智能体数量 N
+  # 不同的r_g值配置
+  radius_list: [0.15, 0.2, 0.25, 0.3]
+  seed: 42  # 网络生成的随机种子
+
+game:
+  learning_rate: 0.3  # 学习率 α
+  initial_belief: 0.5  # 初始信念
+  # F(x) = x^(1/4) 的配置
+  reward_function:
+    type: "power"
+    exponent: 0.25  # 1/4
+  # λ分布配置
+  lambda_distribution:
+    type: "uniform"
+    params:
+      low: 0.0
+      high: 2.0
+
+simulation:
+  max_rounds: 10000000  # 最大轮数 T=10^7
+  convergence_threshold: 0.0001  # 收敛阈值 ε_s=10^(-4)
+  n_trials: 500  # 每个r_g值的重复实验次数
+  save_interval: 1000  # 数据保存间隔
+
+# 数据存储配置
+output:
+  base_dir: "data/experiment1"
+  save_network: true  # 是否保存网络结构
+  save_beliefs: true  # 是否保存信念演化
+  save_actions: true  # 是否保存行动历史
+  formats: ["csv", "pickle"]  # 数据保存格式
+
+# 可视化配置
+visualization:
+  plot_types: ["tail_probability", "network_state", "belief_evolution"]
+  figure_format: "png"
+  dpi: 300
+  style: "default"
+
+# 并行计算配置
+parallel:
+  enabled: true
+  n_processes: 8  # 并行进程数
+  chunk_size: 10  # 任务分块大小
+
+# 日志配置
+logging:
+  level: "INFO"
+  save_to_file: true
+  file_name: "experiment1.log"
+
+# 分析配置
+analysis:
+  compute_features: ["degree", "clustering", "triangles"]
+  convergence_metrics: ["time", "final_state", "belief_distribution"]
+  statistical_tests: ["ks_test", "mann_whitney"]

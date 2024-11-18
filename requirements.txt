@@ -1,0 +1,8 @@
+pytest==8.3.3
+numpy>=1.20,!=1.24.0  # 避免与seaborn的冲突
+matplotlib==3.7.1  # 用于可视化
+networkx==3.1      # 用于网络操作
+pandas==2.0.1      # 用于数据处理
+scipy==1.10.1      # 用于科学计算
+PyYAML==6.0.1      # 用于YAML配置文件
+seaborn==0.13.2  # 添加seaborn依赖
