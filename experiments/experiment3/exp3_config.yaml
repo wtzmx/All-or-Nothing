@@ -1,0 +1,126 @@
+# 实验三：网络结构对比研究配置
+
+# 实验基本信息
+experiment_name: "network_structure_comparison"
+description: "Comparative analysis of cooperation dynamics across different network structures"
+version: "1.0"
+
+# 实验参数设置
+networks:
+  # 随机几何图配置
+  geometric:
+    enabled: true
+    n_agents: 50
+    radius_list: [0.15, 0.25]  # 选取典型的r_g值
+    
+  # 规则图配置
+  regular:
+    enabled: true
+    n_agents: 50
+    l_values: [2, 6]  # 选取典型的l值
+    
+  # 随机图配置(ER模型)
+  random:
+    enabled: true
+    n_agents: 50
+    p_values: [0.1, 0.3]  # 连接概率
+    
+  # 小世界网络配置(WS模型)
+  small_world:
+    enabled: true
+    n_agents: 50
+    k: 4  # 初始近邻数
+    p_values: [0.1, 0.3]  # 重连概率
+    
+  # 无标度网络配置(BA模型)
+  scale_free:
+    enabled: true
+    n_agents: 50
+    m_values: [2, 4]  # 每个新节点的连接数
+
+  seed: 42  # 网络生成的随机种子
+
+game:
+  learning_rate: 0.3  # 学习率 α
+  initial_belief: 0.5  # 初始信念
+  # F(x) = x^(1/4) 的配置
+  reward_function:
+    type: "power"
+    exponent: 0.25  # 1/4
+  # λ分布配置
+  lambda_distribution:
+    type: "uniform"
+    params:
+      low: 0.0
+      high: 2.0
+
+simulation:
+  max_rounds: 10000000  # 最大轮数 T=10^7
+  convergence_threshold: 0.0001  # 收敛阈值 ε_s=10^(-4)
+  n_trials: 500  # 每种网络配置的重复实验次数
+  save_interval: 1000  # 数据保存间隔
+
+# 数据存储配置
+output:
+  base_dir: "data/experiment3"
+  save_network: true  # 是否保存网络结构
+  save_beliefs: true  # 是否保存信念演化
+  save_actions: true  # 是否保存行动历史
+  formats: ["csv", "pickle"]  # 数据保存格式
+
+# 可视化配置
+visualization:
+  plot_types: [
+    "tail_probability",     # 收敛时间尾概率
+    "network_state",        # 网络状态
+    "belief_evolution",     # 信念演化
+    "network_comparison",   # 网络结构对比
+    "convergence_analysis"  # 收敛性分析
+  ]
+  figure_format: "png"
+  dpi: 300
+  style: "default"
+
+# 并行计算配置
+parallel:
+  enabled: true
+  n_processes: 8  # 并行进程数
+  chunk_size: 10  # 任务分块大小
+
+# 日志配置
+logging:
+  level: "INFO"
+  save_to_file: true
+  file_name: "experiment3.log"
+
+# 分析配置
+analysis:
+  # 网络特征计算
+  compute_features: [
+    "degree_distribution",    # 度分布
+    "clustering",            # 聚类系数
+    "path_length",           # 平均路径长度
+    "centrality",            # 中心性
+    "modularity",            # 模块度
+    "assortativity"          # 同配性
+  ]
+  # 收敛性分析
+  convergence_metrics: [
+    "time",                  # 收敛时间
+    "final_state",           # 最终状态
+    "belief_distribution",    # 信念分布
+    "meta_stability"         # 亚稳态分析
+  ]
+  # 统计检验
+  statistical_tests: [
+    "ks_test",              # KS检验
+    "mann_whitney",         # Mann-Whitney U检验
+    "kruskal_wallis"        # Kruskal-Wallis H检验
+  ]
+  # 网络对比指标
+  comparison_metrics: [
+    "convergence_speed",     # 收敛速度
+    "cooperation_level",     # 合作水平
+    "stability",             # 稳定性
+    "resilience"            # 鲁棒性
+  ] 
